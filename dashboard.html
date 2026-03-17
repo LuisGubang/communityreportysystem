@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Reporting System - Admin Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">    <link id="theme-css" rel="stylesheet" href="css/theme-vscode-premium.css"></head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CRS</div>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="report.html">New Report</a></li>
+                <li><a href="index.html">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="dashboard-container">
+            <h1>Admin Dashboard</h1>
+
+            <div class="stats-section">
+                <div class="stat-card">
+                    <h3>Total Reports</h3>
+                    <p class="stat-number">245</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending</h3>
+                    <p class="stat-number">45</p>
+                </div>
+                <div class="stat-card">
+                    <h3>In Progress</h3>
+                    <p class="stat-number">78</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Resolved</h3>
+                    <p class="stat-number">122</p>
+                </div>
+            </div>
+
+            <div class="reports-section">
+                <h2>Recent Reports</h2>
+                <table class="reports-table">
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Incident Type</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#001</td>
+                            <td>Theft</td>
+                            <td>Main Street</td>
+                            <td>2026-02-05</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td><button class="btn-small">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>#002</td>
+                            <td>Vandalism</td>
+                            <td>Park Avenue</td>
+                            <td>2026-02-04</td>
+                            <td><span class="status in-progress">In Progress</span></td>
+                            <td><button class="btn-small">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>#003</td>
+                            <td>Noise Disturbance</td>
+                            <td>Oak Street</td>
+                            <td>2026-02-03</td>
+                            <td><span class="status resolved">Resolved</span></td>
+                            <td><button class="btn-small">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Community Reporting System. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/theme-switcher.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRS — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/auth.css"/>
+</head>
+<body>
+
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-noise"></div>
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-grid"></div>
+</div>
+
+<div class="auth-page">
+
+  <div class="auth-visual">
+    <div class="av-grid"></div>
+    <a href="index.html" class="av-logo">
+      <div class="logo-mark"><i class="fas fa-shield-halved"></i></div>
+      <span>CRS</span>
+    </a>
+    <div class="av-body">
+      <div class="av-label"><span class="pulse-dot"></span> System Active</div>
+      <h2 class="av-title">Report.<br/><span class="accent">Protect.</span><br/>Respond.</h2>
+      <p class="av-sub">The fastest, most anonymous way to report community incidents. Real-time alerts. Zero exposure.</p>
+      <div class="av-alerts">
+        <div class="av-alert">
+          <span class="av-dot red"></span>
+          <div class="av-alert-body">
+            <div class="av-alert-title">Fire Reported — Westlands</div>
+            <div class="av-alert-meta">2 minutes ago</div>
+          </div>
+          <span class="av-badge high">HIGH</span>
+        </div>
+        <div class="av-alert">
+          <span class="av-dot amber"></span>
+          <div class="av-alert-body">
+            <div class="av-alert-title">Road Accident — Ngong Rd</div>
+            <div class="av-alert-meta">8 minutes ago</div>
+          </div>
+          <span class="av-badge med">MED</span>
+        </div>
+        <div class="av-alert">
+          <span class="av-dot green"></span>
+          <div class="av-alert-body">
+            <div class="av-alert-title">Flood Report — Resolved</div>
+            <div class="av-alert-meta">20 minutes ago</div>
+          </div>
+          <span class="av-badge done"><i class="fas fa-check"></i></span>
+        </div>
+      </div>
+      <div class="av-stats">
+        <div class="av-stat"><span class="av-stat-num">2.4K+</span><span class="av-stat-label">Reports</span></div>
+        <div class="av-stat"><span class="av-stat-num">98%</span><span class="av-stat-label">Resolved</span></div>
+        <div class="av-stat"><span class="av-stat-num">&lt;12m</span><span class="av-stat-label">Avg Response</span></div>
+      </div>
+    </div>
+    <p class="av-footer">&copy; 2026 Community Reporting System</p>
+  </div>
+
+  <div class="auth-form-panel">
+    <div class="nav-theme">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="theme-icon dark-icon"><i class="fas fa-moon"></i></span>
+        <span class="theme-icon light-icon"><i class="fas fa-sun"></i></span>
+        <span class="toggle-track"></span>
+      </button>
+    </div>
+    <a href="index.html" class="auth-back"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="auth-form-header">
+      <h1>Welcome back</h1>
+      <p>Sign in to your CRS account to continue</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSignIn">Sign In</button>
+      <button class="auth-tab" id="tabSignUp" onclick="window.location.href='register.html'">Create Account</button>
+    </div>
+    <div class="role-selector" id="roleSelector">
+      <button class="role-card user-role active" data-role="user">
+        <div class="role-card-icon"><i class="fas fa-user"></i></div>
+        <div class="role-card-name">Community Member</div>
+        <div class="role-card-desc">Report incidents</div>
+      </button>
+      <button class="role-card admin-role" data-role="admin">
+        <div class="role-card-icon"><i class="fas fa-shield-halved"></i></div>
+        <div class="role-card-name">Administrator</div>
+        <div class="role-card-desc">Manage the system</div>
+      </button>
+    </div>
+    <form class="auth-form" id="loginForm" autocomplete="off">
+      <div class="form-field">
+        <label>Email Address</label>
+        <div class="field-wrap">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email"/>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Password</label>
+        <div class="field-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" name="password" class="pw-input" placeholder="Enter your password" required autocomplete="current-password"/>
+          <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show/hide password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <div class="form-field admin-only-fields" id="adminCodeField">
+        <label>Admin Access Code</label>
+        <div class="restricted-badge"><i class="fas fa-lock"></i> Restricted Access</div>
+        <div class="field-wrap access-code-field">
+          <i class="fas fa-key"></i>
+          <input type="password" id="adminCode" name="adminCode" placeholder="XXXX-XXXX" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="form-row-inline">
+        <label class="form-check">
+          <input type="checkbox" id="rememberMe"/>
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+      <div id="loginAlert" class="form-alert error">
+        <i class="fas fa-circle-exclamation"></i>
+        <span id="loginAlertMsg"></span>
+      </div>
+      <button type="submit" class="auth-submit" id="loginSubmit">
+        <i class="fas fa-arrow-right-to-bracket"></i>
+        Sign In
+      </button>
+      <p class="auth-switch">No account yet? <a href="register.html">Create one free</a></p>
+    </form>
+  </div>
+</div>
+
+<script src="js/shared.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

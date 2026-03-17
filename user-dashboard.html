@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRS — My Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body class="app-shell">
+
+<header class="app-topbar">
+  <button class="topbar-btn" id="sidebarToggle" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-mark"><i class="fas fa-shield-halved"></i></div>
+    <span>CRS</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-user">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <span class="theme-icon dark-icon"><i class="fas fa-moon"></i></span>
+      <span class="theme-icon light-icon"><i class="fas fa-sun"></i></span>
+      <span class="toggle-track"></span>
+    </button>
+    <span class="topbar-name" id="userNameDisplay">User</span>
+    <div class="topbar-avatar" id="userAvatar">U</div>
+    <button class="topbar-btn logout" id="logoutBtn">
+      <i class="fas fa-arrow-right-from-bracket"></i> Logout
+    </button>
+  </div>
+</header>
+
+<aside class="app-sidebar" id="appSidebar">
+  <p class="sidebar-section-label">Main</p>
+  <ul class="sidebar-nav">
+    <li><a class="sidebar-link active" data-section="dashboard"><i class="fas fa-house"></i> Dashboard</a></li>
+    <li><a class="sidebar-link" data-section="reports"><i class="fas fa-file-lines"></i> My Reports</a></li>
+    <li><a class="sidebar-link" data-section="new-report"><i class="fas fa-plus-circle"></i> New Report</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <p class="sidebar-section-label">Account</p>
+  <ul class="sidebar-nav">
+    <li><a class="sidebar-link" data-section="notifications"><i class="fas fa-bell"></i> Notifications <span class="sidebar-badge" id="notifBadge" style="display:none">0</span></a></li>
+    <li><a class="sidebar-link" data-section="profile"><i class="fas fa-user-circle"></i> My Profile</a></li>
+  </ul>
+</aside>
+
+<main class="app-main">
+
+  <section class="content-section active" id="dashboard-section">
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <p>Monitor your incident reports and status updates in real-time</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card-d">
+        <div class="scd-top"><div class="scd-icon blue"><i class="fas fa-file-lines"></i></div></div>
+        <div class="scd-num" id="submittedCount">0</div>
+        <div class="scd-label">Submitted Reports</div>
+      </div>
+      <div class="stat-card-d">
+        <div class="scd-top"><div class="scd-icon amber"><i class="fas fa-hourglass-half"></i></div></div>
+        <div class="scd-num" id="underReviewCount">0</div>
+        <div class="scd-label">Under Review</div>
+      </div>
+      <div class="stat-card-d">
+        <div class="scd-top"><div class="scd-icon green"><i class="fas fa-circle-check"></i></div></div>
+        <div class="scd-num" id="resolvedCount">0</div>
+        <div class="scd-label">Resolved Reports</div>
+      </div>
+      <div class="stat-card-d">
+        <div class="scd-top"><div class="scd-icon purple"><i class="fas fa-bell"></i></div></div>
+        <div class="scd-num" id="latestUpdateTime" style="font-size:1rem;padding-top:0.25rem">N/A</div>
+        <div class="scd-label">Latest Update</div>
+      </div>
+    </div>
+    <div class="dash-two-col">
+      <div class="panel">
+        <div class="panel-header">
+          <h2><i class="fas fa-images" style="color:var(--accent);margin-right:0.5rem"></i> Incident Types Gallery</h2>
+          <span class="panel-action" id="imageCounter">1 / 5</span>
+        </div>
+        <div style="padding:1.25rem">
+          <div class="gallery-frame" style="border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;position:relative;background:var(--bg-elevated);border:1px solid var(--border)">
+            <img id="galleryImage" src="assets/images/accident.avif" alt="Incident"
+              style="width:100%;height:100%;object-fit:cover;transition:opacity 0.4s ease;"
+              onerror="this.style.display='none'"/>
+            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.7));padding:1.5rem 1rem 0.85rem;display:flex;align-items:flex-end;justify-content:space-between">
+              <span id="imageTitle" style="font-size:0.875rem;font-weight:700;color:#fff;background:rgba(0,0,0,0.35);padding:0.25rem 0.75rem;border-radius:20px;backdrop-filter:blur(8px)">Road Accident</span>
+            </div>
+            <button class="gal-nav gal-prev" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+            <button class="gal-nav gal-next" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.85rem;flex-wrap:wrap">
+            <button class="gal-thumb active" data-image="assets/images/accident.avif" data-title="Road Accident" data-index="0" style="flex:1;padding:0.5rem 0.25rem;border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;transition:all 0.2s;min-width:52px">
+              <i class="fas fa-car-burst" style="color:var(--amber);font-size:1rem"></i>
+              <span style="font-size:0.62rem;color:var(--text-muted)">Accident</span>
+            </button>
+            <button class="gal-thumb" data-image="assets/images/fire.jpg" data-title="Fire Outbreak" data-index="1" style="flex:1;padding:0.5rem 0.25rem;border:1.5px solid var(--border);background:var(--bg-elevated);border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;transition:all 0.2s;min-width:52px">
+              <i class="fas fa-fire" style="color:var(--red);font-size:1rem"></i>
+              <span style="font-size:0.62rem;color:var(--text-muted)">Fire</span>
+            </button>
+            <button class="gal-thumb" data-image="assets/images/flood.jpeg" data-title="Flood/Disaster" data-index="2" style="flex:1;padding:0.5rem 0.25rem;border:1.5px solid var(--border);background:var(--bg-elevated);border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;transition:all 0.2s;min-width:52px">
+              <i class="fas fa-water" style="color:var(--accent);font-size:1rem"></i>
+              <span style="font-size:0.62rem;color:var(--text-muted)">Flood</span>
+            </button>
+            <button class="gal-thumb" data-image="assets/images/robbery.webp" data-title="Crime/Robbery" data-index="3" style="flex:1;padding:0.5rem 0.25rem;border:1.5px solid var(--border);background:var(--bg-elevated);border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;transition:all 0.2s;min-width:52px">
+              <i class="fas fa-user-ninja" style="color:#8b5cf6;font-size:1rem"></i>
+              <span style="font-size:0.62rem;color:var(--text-muted)">Crime</span>
+            </button>
+            <button class="gal-thumb" data-image="assets/images/stealing.jpg" data-title="Theft" data-index="4" style="flex:1;padding:0.5rem 0.25rem;border:1.5px solid var(--border);background:var(--bg-elevated);border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;transition:all 0.2s;min-width:52px">
+              <i class="fas fa-lock" style="color:var(--green);font-size:1rem"></i>
+              <span style="font-size:0.62rem;color:var(--text-muted)">Theft</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2><i class="fas fa-clock-rotate-left" style="color:var(--accent);margin-right:0.5rem"></i> Recent Reports</h2>
+          <span class="panel-action" onclick="switchSection('reports')" style="cursor:pointer">View All</span>
+        </div>
+        <div id="recentReportsList">
+          <div class="empty-state-d">
+            <i class="fas fa-inbox"></i>
+            <p>No reports yet. <a href="#" onclick="switchSection('new-report')" style="color:var(--accent)">Submit your first report.</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section" id="reports-section">
+    <div class="page-header"><h1>My Reports</h1><p>Manage and track all your submitted incident reports</p></div>
+    <div class="filters-bar">
+      <div class="filter-input-wrap">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" class="filter-input" id="searchReports" placeholder="Search by title or location…"/>
+      </div>
+      <select class="filter-select" id="statusFilter">
+        <option value="">All Status</option>
+        <option value="submitted">Submitted</option>
+        <option value="under-review">Under Review</option>
+        <option value="resolved">Resolved</option>
+      </select>
+    </div>
+    <div class="panel">
+      <div id="userReportsList">
+        <div class="empty-state-d"><i class="fas fa-file-lines"></i><p>No reports found.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section" id="new-report-section">
+    <div class="page-header"><h1>Submit New Report</h1><p>Report an incident in your community and help keep others safe</p></div>
+    <form id="newReportForm">
+      <div class="form-section-block">
+        <div class="fsb-header"><i class="fas fa-triangle-exclamation"></i><h3>Incident Details</h3></div>
+        <div class="fsb-body">
+          <div class="fsb-row">
+            <div class="rf-field">
+              <label><i class="fas fa-tag"></i> Incident Type</label>
+              <select id="incidentType" name="incidentType" required>
+                <option value="">Select type…</option>
+                <option value="crime">Crime</option>
+                <option value="flood">Flood / Natural Disaster</option>
+                <option value="fire">Fire Outbreak</option>
+                <option value="accident">Road Accident</option>
+                <option value="health">Health Emergency</option>
+                <option value="infrastructure">Infrastructure Issue</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="rf-field">
+              <label><i class="fas fa-heading"></i> Report Title</label>
+              <input type="text" id="title" name="title" placeholder="Brief title of the incident" required/>
+            </div>
+          </div>
+          <div class="rf-field">
+            <label><i class="fas fa-align-left"></i> Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Describe the incident in detail…" required></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-section-block">
+        <div class="fsb-header"><i class="fas fa-map-marker-alt"></i><h3>Location</h3></div>
+        <div class="fsb-body">
+          <div class="rf-field">
+            <label><i class="fas fa-location-dot"></i> Address / Description</label>
+            <input type="text" id="location" name="location" placeholder="Enter address or click map to pin location" required/>
+          </div>
+          <div class="map-container"><div id="reportMap"></div></div>
+          <p class="rf-small"><i class="fas fa-info-circle"></i> Click anywhere on the map to drop a pin at the incident location.</p>
+        </div>
+      </div>
+      <div class="form-section-block">
+        <div class="fsb-header"><i class="fas fa-paperclip"></i><h3>Additional Information</h3></div>
+        <div class="fsb-body">
+          <div class="rf-field">
+            <label><i class="fas fa-image"></i> Add Photos (optional)</label>
+            <input type="file" id="photos" name="photos" accept="image/*" multiple/>
+            <p class="rf-small">Max 5 photos. JPG or PNG recommended.</p>
+            <div class="photo-preview" id="photoPreview"></div>
+          </div>
+          <div class="anon-check">
+            <input type="checkbox" id="anonymous" name="anonymous"/>
+            <div>
+              <div class="anon-check-label"><i class="fas fa-mask" style="color:var(--accent);margin-right:0.4rem"></i> Submit Anonymously</div>
+              <div class="anon-check-sub">Your name won't be shared with anyone</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="reportAlertDiv" class="form-alert error" style="margin-bottom:1rem">
+        <i class="fas fa-circle-exclamation"></i>
+        <span id="reportAlertMsg"></span>
+      </div>
+      <div id="reportSuccessDiv" class="form-alert success" style="display:none;margin-bottom:1rem">
+        <i class="fas fa-circle-check"></i>
+        <span id="reportSuccessMsg"></span>
+      </div>
+      <div class="form-submit-row">
+        <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Submit Report</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="content-section" id="notifications-section">
+    <div class="page-header"><h1>Notifications</h1><p>Stay updated about your reports and community alerts</p></div>
+    <div class="panel">
+      <div id="notificationsList">
+        <div class="empty-state-d"><i class="fas fa-bell-slash"></i><p>No notifications yet. Updates about your reports will appear here.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section" id="profile-section">
+    <div class="page-header"><h1>My Profile</h1><p>Manage your account information and preferences</p></div>
+    <div class="form-section-block">
+      <div class="profile-avatar-section">
+        <div class="profile-avatar" id="profileAvatar">U</div>
+        <div>
+          <div class="profile-avatar-name" id="profileDisplayName">User</div>
+          <div class="profile-avatar-email" id="profileDisplayEmail">—</div>
+        </div>
+      </div>
+      <form id="profileForm">
+        <div class="fsb-header" style="margin-top:0"><i class="fas fa-user"></i><h3>Personal Information</h3></div>
+        <div class="fsb-body">
+          <div class="fsb-row">
+            <div class="rf-field">
+              <label><i class="fas fa-user"></i> Full Name</label>
+              <input type="text" id="profileName" name="profileName" placeholder="Your full name" required/>
+            </div>
+            <div class="rf-field">
+              <label><i class="fas fa-envelope"></i> Email</label>
+              <input type="email" id="profileEmail" name="profileEmail" placeholder="your@email.com" required/>
+            </div>
+          </div>
+          <div class="fsb-row">
+            <div class="rf-field">
+              <label><i class="fas fa-phone"></i> Phone</label>
+              <input type="tel" id="profilePhone" name="profilePhone" placeholder="+254 700 000 000"/>
+            </div>
+            <div class="rf-field">
+              <label><i class="fas fa-map-marker-alt"></i> Area / Location</label>
+              <input type="text" id="profileLocation" name="profileLocation" placeholder="Nairobi, Kenya"/>
+            </div>
+          </div>
+          <div class="form-submit-row">
+            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Update Profile</button>
+          </div>
+          <div id="profileSuccessDiv" class="form-alert success" style="display:none"><i class="fas fa-circle-check"></i><span>Profile updated successfully!</span></div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/user-dashboard.js"></script>
+</body>
+</html>

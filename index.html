@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRS — Community Reporting System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="bg-noise"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-mark"><i class="fas fa-shield-halved"></i></div>
+        <span class="logo-text">CRS</span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="login.html" class="nav-link">Login</a>
+        <a href="register.html" class="nav-link">Register</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle dark/light mode">
+          <span class="theme-icon dark-icon"><i class="fas fa-moon"></i></span>
+          <span class="theme-icon light-icon"><i class="fas fa-sun"></i></span>
+          <span class="toggle-track"></span>
+        </button>
+        <a href="login.html" class="nav-cta">
+          <i class="fas fa-arrow-right"></i> Get Started
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-label">
+          <span class="pulse-dot"></span>
+          System Active — Nairobi Region
+        </div>
+        <h1 class="hero-title">
+          <span class="title-line">Report.</span>
+          <span class="title-line accent">Protect.</span>
+          <span class="title-line">Respond.</span>
+        </h1>
+        <p class="hero-sub">
+          The fastest, most anonymous way to report community incidents.<br/>
+          Real-time alerts. Instant authority notification. Zero exposure.
+        </p>
+        <div class="hero-actions">
+          <a href="login.html" class="btn-primary">
+            <i class="fas fa-bolt"></i>
+            Report an Incident
+          </a>
+          <a href="login.html" class="btn-ghost">
+            <i class="fas fa-map-location-dot"></i>
+            View Live Map
+          </a>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><i class="fas fa-shield-halved"></i><span>Verified &amp; Secure</span></div>
+          <div class="trust-divider"></div>
+          <div class="trust-item"><i class="fas fa-user-secret"></i><span>100% Anonymous</span></div>
+          <div class="trust-divider"></div>
+          <div class="trust-item"><i class="fas fa-clock"></i><span>24 / 7 Available</span></div>
+        </div>
+        <div class="hero-floats" aria-hidden="true">
+          <div class="float-card float-a">
+            <span class="fc-dot red"></span>
+            <div class="fc-body"><p class="fc-title">Fire Reported</p><p class="fc-meta">Westlands · 2 min ago</p></div>
+            <span class="fc-badge high">HIGH</span>
+          </div>
+          <div class="float-card float-b">
+            <span class="fc-dot green"></span>
+            <div class="fc-body"><p class="fc-title">Flood — Resolved</p><p class="fc-meta">Eastleigh · 20 min ago</p></div>
+            <span class="fc-badge done"><i class="fas fa-check"></i></span>
+          </div>
+          <div class="float-card float-c">
+            <span class="fc-dot amber"></span>
+            <div class="fc-body"><p class="fc-title">Road Accident</p><p class="fc-meta">Ngong Road · 8 min ago</p></div>
+            <span class="fc-badge med">MED</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <div class="stats-inner">
+        <div class="stat-card" data-count="2500" data-suffix="+">
+          <div class="stat-icon"><i class="fas fa-file-lines"></i></div>
+          <div class="stat-body"><div class="stat-num" id="stat0">0</div><div class="stat-label">Reports Processed</div></div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card" data-count="98" data-suffix="%">
+          <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+          <div class="stat-body"><div class="stat-num" id="stat1">0</div><div class="stat-label">Resolution Rate</div></div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card" data-special="&lt;2 hrs">
+          <div class="stat-icon"><i class="fas fa-stopwatch"></i></div>
+          <div class="stat-body"><div class="stat-num" id="stat2">&lt;2 hrs</div><div class="stat-label">Average Response</div></div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card" data-count="100" data-suffix="%">
+          <div class="stat-icon"><i class="fas fa-user-secret"></i></div>
+          <div class="stat-body"><div class="stat-num" id="stat3">0</div><div class="stat-label">Anonymous</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery-section section-pad">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fas fa-images"></i> Incident Types</span>
+          <h2 class="section-title">What We Cover</h2>
+          <p class="section-sub">From road accidents to natural disasters — our system handles every type of community incident.</p>
+        </div>
+        <div class="gallery-layout">
+          <div class="gallery-main">
+            <div class="gallery-frame">
+              <img id="galleryImage" src="assets/images/accident.avif" alt="Incident type" class="gallery-img" onerror="this.src=''; this.parentElement.classList.add('img-fallback')"/>
+              <div class="gallery-overlay">
+                <div class="gallery-meta">
+                  <span class="gm-type" id="imageTitle">Road Accident</span>
+                  <span class="gm-count" id="imageCounter">1 / 5</span>
+                </div>
+              </div>
+              <button class="gal-nav gal-prev" id="prevBtn" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+              <button class="gal-nav gal-next" id="nextBtn" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="gallery-sidebar">
+            <p class="gal-sidebar-label">Choose Category</p>
+            <div class="gallery-thumbs">
+              <button class="gal-thumb active" data-image="assets/images/accident.avif" data-title="Road Accident" data-index="0">
+                <div class="gt-icon accident"><i class="fas fa-car-burst"></i></div>
+                <div class="gt-body"><p class="gt-name">Road Accident</p><p class="gt-meta">Vehicle collisions &amp; crashes</p></div>
+                <i class="fas fa-chevron-right gt-arrow"></i>
+              </button>
+              <button class="gal-thumb" data-image="assets/images/fire.jpg" data-title="Fire Outbreak" data-index="1">
+                <div class="gt-icon fire"><i class="fas fa-fire"></i></div>
+                <div class="gt-body"><p class="gt-name">Fire Outbreak</p><p class="gt-meta">Building &amp; wildfire incidents</p></div>
+                <i class="fas fa-chevron-right gt-arrow"></i>
+              </button>
+              <button class="gal-thumb" data-image="assets/images/flood.jpeg" data-title="Flood / Disaster" data-index="2">
+                <div class="gt-icon flood"><i class="fas fa-water"></i></div>
+                <div class="gt-body"><p class="gt-name">Flood / Disaster</p><p class="gt-meta">Natural disaster events</p></div>
+                <i class="fas fa-chevron-right gt-arrow"></i>
+              </button>
+              <button class="gal-thumb" data-image="assets/images/robbery.webp" data-title="Crime / Robbery" data-index="3">
+                <div class="gt-icon crime"><i class="fas fa-user-ninja"></i></div>
+                <div class="gt-body"><p class="gt-name">Crime / Robbery</p><p class="gt-meta">Armed &amp; violent crime</p></div>
+                <i class="fas fa-chevron-right gt-arrow"></i>
+              </button>
+              <button class="gal-thumb" data-image="assets/images/stealing.jpg" data-title="Theft" data-index="4">
+                <div class="gt-icon theft"><i class="fas fa-lock"></i></div>
+                <div class="gt-body"><p class="gt-name">Theft</p><p class="gt-meta">Property &amp; petty crime</p></div>
+                <i class="fas fa-chevron-right gt-arrow"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features-section section-pad">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fas fa-bolt"></i> How It Works</span>
+          <h2 class="section-title">Simple. Fast. Effective.</h2>
+          <p class="section-sub">Four easy steps from witnessing an incident to authorities responding on the ground.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card" style="--i:0">
+            <div class="feat-num">01</div>
+            <div class="feat-icon-wrap report-icon"><i class="fas fa-pen-to-square"></i></div>
+            <h3 class="feat-title">Submit Report</h3>
+            <p class="feat-body">Add photos, location pin, description and select incident type in under 60 seconds.</p>
+            <div class="feat-arrow"><i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="feature-card" style="--i:1">
+            <div class="feat-num">02</div>
+            <div class="feat-icon-wrap secure-icon"><i class="fas fa-shield-halved"></i></div>
+            <h3 class="feat-title">Stay Anonymous</h3>
+            <p class="feat-body">Your identity is fully encrypted and never shared. Report without fear, always.</p>
+            <div class="feat-arrow"><i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="feature-card" style="--i:2">
+            <div class="feat-num">03</div>
+            <div class="feat-icon-wrap alert-icon"><i class="fas fa-bell"></i></div>
+            <h3 class="feat-title">Instant Alert</h3>
+            <p class="feat-body">Local authorities are notified in real-time. High-severity reports trigger immediate dispatch.</p>
+            <div class="feat-arrow"><i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="feature-card" style="--i:3">
+            <div class="feat-num">04</div>
+            <div class="feat-icon-wrap track-icon"><i class="fas fa-chart-line"></i></div>
+            <h3 class="feat-title">Track Progress</h3>
+            <p class="feat-body">Follow your report from submitted → under review → resolved right from your dashboard.</p>
+            <div class="feat-arrow last"><i class="fas fa-check"></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="emergency-section section-pad">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag emergency-tag"><i class="fas fa-triangle-exclamation"></i> Emergency</span>
+          <h2 class="section-title">Life-Threatening Situations</h2>
+          <p class="section-sub">For immediate danger, call emergency services <strong>first</strong>, then use CRS to log the incident for community awareness.</p>
+        </div>
+        <div class="emergency-grid">
+          <div class="emergency-card em-medical">
+            <div class="em-pulse"></div>
+            <div class="em-icon"><i class="fas fa-heart-pulse"></i></div>
+            <h3>Medical Emergency</h3>
+            <div class="em-number"><span class="em-call">Call</span><span class="em-digits">911</span></div>
+            <p>Then report for community awareness and faster response coordination.</p>
+            <a href="login.html" class="em-link">Report Incident <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="emergency-card em-crime">
+            <div class="em-pulse"></div>
+            <div class="em-icon"><i class="fas fa-siren-on"></i></div>
+            <h3>Active Crime</h3>
+            <div class="em-number"><span class="em-call">Call</span><span class="em-digits">911</span></div>
+            <p>Submit incident details through our system to alert nearby community members.</p>
+            <a href="login.html" class="em-link">Report Incident <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="emergency-card em-hazard">
+            <div class="em-pulse"></div>
+            <div class="em-icon"><i class="fas fa-triangle-exclamation"></i></div>
+            <h3>Public Safety Risk</h3>
+            <div class="em-number"><span class="em-call">Call</span><span class="em-digits">911</span></div>
+            <p>Report hazards, gas leaks, and structural dangers to protect your neighbours.</p>
+            <a href="login.html" class="em-link">Report Incident <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="em-cta-band">
+          <div class="em-cta-text">
+            <h3>Ready to make your community safer?</h3>
+            <p>Join thousands of residents already reporting and protecting their neighbourhoods.</p>
+          </div>
+          <div class="em-cta-actions">
+            <a href="register.html" class="btn-primary"><i class="fas fa-user-plus"></i> Create Free Account</a>
+            <a href="login.html" class="btn-ghost">Sign In</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo-mark"><i class="fas fa-shield-halved"></i></div>
+        <span>CRS — Community Reporting System</span>
+      </div>
+      <p class="footer-copy">&copy; 2026 Community Reporting System. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/shared.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

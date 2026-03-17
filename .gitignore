@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Environment and secrets
+.env
+backend/.env
+
+# Logs and runtime files
+*.log
+logs/
+backend/logs/
+
+# OS/editor
+.DS_Store
+.vscode/
+
+# Build/cache
+coverage/
+dist/
+.tmp/
