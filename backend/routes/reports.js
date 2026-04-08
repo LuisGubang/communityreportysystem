@@ -7,9 +7,7 @@ const router = express.Router();
 const { body, validationResult, query } = require('express-validator');
 const { authenticate, authorize } = require('../middleware/auth');
 const logger = require('../utils/logger');
-
-// Mock database (replace with real database)
-const reports = [];
+const Report = require('../models/Report');
 
 /**
  * GET /api/reports
@@ -19,35 +17,46 @@ router.get('/', authenticate, async (req, res) => {
   try {
     const { status, type, page = 1, limit = 10 } = req.query;
 
-    let filteredReports = [...reports];
+    // Build query filter
+    let query = {};
 
     // Filter by type if provided
     if (type) {
-      filteredReports = filteredReports.filter(r => r.incidentType === type);
+      query.incidentType = type;
     }
 
     // Filter by status if provided
     if (status) {
-      filteredReports = filteredReports.filter(r => r.status === status);
+      query.status = status;
     }
 
     // If not admin, only return user's reports
     if (req.user.role !== 'admin') {
-      filteredReports = filteredReports.filter(r => r.userId === req.user.id);
+      query.userId = req.user.id;
     }
 
-    // Pagination
-    const startIndex = (page - 1) * limit;
-    const paginatedReports = filteredReports.slice(startIndex, startIndex + limit);
+    // Get total count
+    const total = await Report.countDocuments(query);
+
+    // Fetch paginated reports
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const reports = await Report.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .lean();
 
     res.json({
       success: true,
-      data: paginatedReports,
+      data: reports,
       pagination: {
-        total: filteredReports.length,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        pages: Math.ceil(filteredReports.length / limit)
+        total,
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(total / limitNum)
       }
     });
   } catch (error) {
@@ -60,16 +69,16 @@ router.get('/', authenticate, async (req, res) => {
  * GET /api/reports/:id
  * Get report by ID
  */
-router.get('/:id', authenticate, (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   try {
-    const report = reports.find(r => r.id === req.params.id);
+    const report = await Report.findById(req.params.id).lean();
 
     if (!report) {
       return res.status(404).json({ success: false, error: 'Report not found' });
     }
 
     // Check authorization
-    if (req.user.role !== 'admin' && report.userId !== req.user.id && !report.anonymous) {
+    if (req.user.role !== 'admin' && report.userId?.toString() !== req.user.id && !report.anonymous) {
       return res.status(403).json({ success: false, error: 'Not authorized' });
     }
 
@@ -96,13 +105,19 @@ router.post('/', authenticate, [
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { incidentType, title, description, location, anonymous = false, photos = [] } = req.body;
+    const { incidentType, title, description, location, anonymous = false, photos = [], coordinates } = req.body;
 
     // Check rate limiting (max reports per day)
-    const userReportsToday = reports.filter(r =>
-      r.userId === req.user.id &&
-      new Date(r.submittedAt).toDateString() === new Date().toDateString()
-    ).length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const userIdForQuery = anonymous ? null : req.user.id;
+    const userReportsToday = await Report.countDocuments({
+      userId: userIdForQuery,
+      dateSubmitted: { $gte: today, $lt: tomorrow }
+    });
 
     const maxReportsPerDay = parseInt(process.env.MAX_REPORTS_PER_USER || 10);
     if (userReportsToday >= maxReportsPerDay) {
@@ -113,28 +128,21 @@ router.post('/', authenticate, [
     }
 
     // Create report
-    const report = {
-      id: `RPT-${Date.now()}`,
+    const report = new Report({
       userId: anonymous ? null : req.user.id,
-      submittedBy: req.user.email,
       incidentType,
       title,
       description,
       location,
+      coordinates,
       anonymous,
       photos,
-      status: 'submitted',
-      submittedAt: new Date(),
-      updates: [],
-      verifications: 0
-    };
+      status: 'submitted'
+    });
 
-    reports.push(report);
+    await report.save();
 
-    logger.info(`Report submitted: ${report.id} by user ${req.user.id}`);
-
-    // Trigger notifications here (would call notification service)
-    // notificationService.sendAdminAlert(report);
+    logger.info(`Report submitted: ${report._id} by user ${req.user.id}`);
 
     res.status(201).json({
       success: true,
@@ -160,26 +168,18 @@ router.put('/:id', authenticate, authorize('admin'), [
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const report = reports.find(r => r.id === req.params.id);
+    const { status, notes } = req.body;
+
+    const report = await Report.findById(req.params.id);
+
     if (!report) {
       return res.status(404).json({ success: false, error: 'Report not found' });
     }
 
-    const { status, notes } = req.body;
+    // Use the updateStatus method from the model
+    await report.updateStatus(status, req.user.id, notes);
 
-    // Update report
-    report.status = status;
-    report.updates.push({
-      timestamp: new Date(),
-      status,
-      updatedBy: req.user.id,
-      notes
-    });
-
-    logger.info(`Report ${report.id} updated to status: ${status}`);
-
-    // Send notification to user
-    // notificationService.sendReportUpdate(report, status);
+    logger.info(`Report ${report._id} updated to status: ${status}`);
 
     res.json({
       success: true,
@@ -196,15 +196,14 @@ router.put('/:id', authenticate, authorize('admin'), [
  * DELETE /api/reports/:id
  * Delete report (admin only)
  */
-router.delete('/:id', authenticate, authorize('admin'), (req, res) => {
+router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const index = reports.findIndex(r => r.id === req.params.id);
+    const report = await Report.findByIdAndDelete(req.params.id);
 
-    if (index === -1) {
+    if (!report) {
       return res.status(404).json({ success: false, error: 'Report not found' });
     }
 
-    reports.splice(index, 1);
     logger.info(`Report ${req.params.id} deleted`);
 
     res.json({
@@ -221,20 +220,21 @@ router.delete('/:id', authenticate, authorize('admin'), (req, res) => {
  * POST /api/reports/:id/verify
  * Verify/upvote a report
  */
-router.post('/:id/verify', authenticate, (req, res) => {
+router.post('/:id/verify', authenticate, async (req, res) => {
   try {
-    const report = reports.find(r => r.id === req.params.id);
+    const report = await Report.findById(req.params.id);
 
     if (!report) {
       return res.status(404).json({ success: false, error: 'Report not found' });
     }
 
-    report.verifications = (report.verifications || 0) + 1;
+    // Use the addVerification method from the model
+    await report.addVerification(req.user.id);
 
     res.json({
       success: true,
       message: 'Report verified',
-      data: { verifications: report.verifications }
+      data: { verifications: report.verificationCount }
     });
   } catch (error) {
     logger.error('Verify report error:', error);
@@ -246,9 +246,9 @@ router.post('/:id/verify', authenticate, (req, res) => {
  * GET /api/reports/user/:uid
  * Get reports for a specific user
  */
-router.get('/user/:uid', authenticate, authorize('admin'), (req, res) => {
+router.get('/user/:uid', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const userReports = reports.filter(r => r.userId === req.params.uid);
+    const userReports = await Report.find({ userId: req.params.uid }).lean();
 
     res.json({
       success: true,

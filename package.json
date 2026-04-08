@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A comprehensive community reporting system with dual authentication and real-time analytics",
   "scripts": {
+    "dev": "npm run backend",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && npm run dev",
     "frontend": "python3 -m http.server 3000",
