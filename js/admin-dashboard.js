@@ -108,6 +108,7 @@ async function syncReportsFromApi() {
   if (!token) return;
 
   try {
+    console.log('Fetching reports from API...');
     const response = await fetch(`${API_BASE}/reports?limit=500`, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -117,32 +118,49 @@ async function syncReportsFromApi() {
     const payload = await response.json();
     const apiReports = Array.isArray(payload.data) ? payload.data : [];
     localStorage.setItem('reports', JSON.stringify(apiReports));
+    console.log(`✅ Synced ${apiReports.length} reports from API`);
+    return apiReports;
   } catch (error) {
+    console.error('Error syncing reports:', error);
+    const cached = JSON.parse(localStorage.getItem('reports') || '[]');
     if (!IS_LOCAL_DEV) {
-      showToast('Could not sync reports from server. Please refresh and login again.', 'error');
+      showToast('Could not sync reports from server', 'error');
     }
+    return cached;
   }
 }
 
 async function syncUsersFromApi() {
   const token = localStorage.getItem('authToken');
-  if (!token) return;
+  if (!token) {
+    console.log('No auth token, cannot sync users');
+    return [];
+  }
 
   try {
-    const response = await fetch(`${API_BASE}/users?limit=500`, {
+    console.log('Fetching users from API...');
+    const response = await fetch(`${API_BASE}/users?limit=50&page=1`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    if (!response.ok) throw new Error('Failed to load users');
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || error.message || 'Failed to load users');
+    }
 
     const payload = await response.json();
     serverUsers = Array.isArray(payload.data) ? payload.data : [];
     localStorage.setItem('serverUsers', JSON.stringify(serverUsers));
+    console.log(`✅ Synced ${serverUsers.length} users from API`);
+    return serverUsers;
   } catch (error) {
+    console.error('Error syncing users:', error);
     serverUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
+    console.log(`Using cached users: ${serverUsers.length}`);
     if (!IS_LOCAL_DEV) {
-      showToast('Could not sync users from server. Please refresh and login again.', 'error');
+      showToast('Could not sync users from server', 'error');
     }
+    return serverUsers;
   }
 }
 
@@ -154,10 +172,10 @@ function switchSection(name) {
   if (section) section.classList.add('active');
   if (link)    link.classList.add('active');
 
-  if (name === 'all-reports')      { renderReportsTable(); }
+  if (name === 'all-reports')      { syncReportsFromApi().then(() => renderReportsTable()); }
   if (name === 'map-view')         { initAdminMap(); }
   if (name === 'analytics')        { initAnalyticsCharts(); }
-  if (name === 'users')            { loadUserManagement(); }
+  if (name === 'users')            { syncUsersFromApi().then(() => loadUserManagement()); }
   if (name === 'reports-per-user') { loadReportsPerUser(); }
   if (name === 'notifications-settings') { loadTemplates(); loadAdminNotifs(); }
 }
@@ -447,6 +465,7 @@ function loadUserManagement() {
   const tbody  = document.getElementById('usersTableBody');
   if (!tbody) return;
 
+  console.log('Loading user management - users count:', usersCache.length);
   let users = [...usersCache];
   if (search) users = users.filter(u => u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
   if (typeF)  users = users.filter(u => u.role === typeF || (typeF === 'citizen' && u.role === 'user'));
@@ -466,7 +485,7 @@ function loadUserManagement() {
       <td><div class="user-name-cell"><div class="user-mini-avatar">${(u.name||'U')[0].toUpperCase()}</div>${u.name}</div></td>
       <td>${u.email}</td>
       <td>${u.role === 'admin' ? 'Admin' : 'Citizen'}</td>
-      <td><span class="ri-status ${activeNow ? 'resolved' : status === 'active' ? 'under-review' : 'rejected'}">${activeNow ? 'Active Now' : formatStatus(status)}</span></td>
+      <td><span class="ri-status ${activeNow ? 'resolved' : status === 'active' ? 'resolved' : 'rejected'}">${activeNow ? 'Active Now' : formatStatus(status)}</span></td>
       <td>${userReports}</td>
       <td>${u.lastLogin ? formatDate(u.lastLogin) : 'Never'}</td>
       <td><button class="tbl-btn" onclick="manageUser('${u.id}')"><i class="fas fa-pen"></i> Manage</button></td>
@@ -673,6 +692,43 @@ function initRealtime() {
       if (document.getElementById('notifications-settings-section') &&
           document.getElementById('notifications-settings-section').classList.contains('active')) {
         loadAdminNotifs();
+      }
+    }
+
+    // New user registered → 'serverUsers' key changed
+    if (e.key === 'serverUsers') {
+      var newUsers = JSON.parse(e.newValue || '[]');
+      var oldUsers = JSON.parse(e.oldValue || '[]');
+      var oldIds = {};
+      oldUsers.forEach(function(u) { oldIds[u.id] = true; });
+      var addedUsers = newUsers.filter(function(u) { return !oldIds[u.id]; });
+
+      addedUsers.forEach(function(u) {
+        showToast('New user registered: ' + u.name, 'success', 6000);
+        var adminNotifs = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
+        var alreadySaved = adminNotifs.some(function(n) { return n.userId === u.id; });
+        if (!alreadySaved) {
+          adminNotifs.unshift({
+            id: 'AN-' + Date.now(),
+            type: 'success',
+            title: 'New User: ' + u.name,
+            message: 'New user ' + u.name + ' (' + u.email + ') registered as ' + (u.role === 'admin' ? 'Admin' : 'Citizen') + '.',
+            userId: u.id,
+            read: false,
+            sentAt: new Date().toISOString()
+          });
+          localStorage.setItem('adminNotifications', JSON.stringify(adminNotifs));
+        }
+      });
+
+      if (addedUsers.length > 0) {
+        updateAdminNotifBadge();
+        loadDashboardStats();
+      }
+      // Refresh user management table if it's open
+      if (document.getElementById('users-section') &&
+          document.getElementById('users-section').classList.contains('active')) {
+        loadUserManagement();
       }
     }
   });
